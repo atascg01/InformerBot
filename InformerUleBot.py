@@ -18,14 +18,15 @@ def oauth_request(url, http, post="", headers=None):
 	resp, content = client.request(url, method=http, headers= None)
 	return content
 
-def publishImage(url, message):
+def publishImage(url, message, idMsg): #Maybe best way is to delete DMs
 	#Get authenticated to media url
 	photo = oauth_request(url, "GET")
 	file = BytesIO(photo)
 	img = Image.open(file)
 	img.save("temp.jpg")
 	#Publish image
-	api.update_with_media("temp.jpg", status=message)
+	asd = api.update_with_media("temp.jpg", status=message)
+	asd.id = idMsg
 	os.remove("temp.jpg")
 
 def publish(last_tweet, messages):
@@ -47,11 +48,11 @@ def publish(last_tweet, messages):
 				time.sleep(10)
 			elif len(i.message_create['message_data'])==3: #Image
 				url = i.message_create['message_data']['attachment']['media']['media_url_https']
-
 				message = i.message_create['message_data']['text']
 				message = message[:message.find("https://")]
-				i.destroy()
-				publishImage(url, message)
+				idMsg = i.id
+				#i.destroy()
+				publishImage(url, message, idMsg)
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
