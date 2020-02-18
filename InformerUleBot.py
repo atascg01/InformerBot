@@ -58,8 +58,10 @@ def publishImage(url, message):
 
 def publishVideo(url, message): #Tweepy publish video
 	urllib.request.urlretrieve(url, "video.mp4")
-	api.update_with_media("video.mp4", status=message)
-	os.remove("video.mp4")
+	if message is "":
+		message = " "
+		api.update_status(status = message, filename="video.mp4")
+		os.remove("video.mp4")
 	
 
 def publish(last_tweet, messages):
